@@ -26,19 +26,22 @@ void Board::setCols(size_t cols)
 void Board::createBoard()
 {
     layout = new QGridLayout(this);
-    // layout->setRowStretch(0, 1);
-    // layout->setRowStretch(1, 2);
-    // layout->setColumnStretch(0, 1);
-    // layout->setColumnStretch(1, 2);
     layout->setSpacing(0);
 
-    int window_width = this->width();
-    int window_height = this->height();
+    // int window_width = this->width();
+    // int window_height = this->height();
+    // Fixed 900x900
+    int window_width = 900;
+    int window_height = 900;
     qDebug() << "geometry:" << window_width << window_height;
+
+    this->setMaximumWidth(window_width+100);
+    this->setMaximumHeight(window_height+100);
+
 
     int max_size = qMin(window_width * 2 / 3, window_height * 2 / 3);
     int larger_size = qMax(rows, cols);
-    int square_size = max_size / larger_size; // !TODO : Handle non symmetric board
+    int square_size = max_size / larger_size;
     int max_height = square_size * rows;
     int max_width = square_size * cols;
     int font_size = 12; // !TODO: Calc font size using square size / 2;
@@ -55,7 +58,14 @@ void Board::createBoard()
 
     // !TODO: Change Font to Scale with Window
     // Row Restrictions
-    rows_restrictions = new QWidget(this);
+    QWidget* rows_restrictions_container = new QWidget(this);
+    QHBoxLayout* rows_restrictions_container_layout = new QHBoxLayout();
+    rows_restrictions_container->setLayout(rows_restrictions_container_layout);
+    rows_restrictions_container_layout->addStretch(1);
+    rows_restrictions_container_layout->setSpacing(0);
+    rows_restrictions_container_layout->setContentsMargins(0, 0, 0, 0);
+
+    rows_restrictions = new QWidget(rows_restrictions_container);
     rows_restrictions->setMinimumHeight(max_height);
     rows_restrictions->setMaximumHeight(max_height);
     rows_restrictions->setMinimumWidth(window_width - max_width);
@@ -63,6 +73,8 @@ void Board::createBoard()
     rows_restrictions_layout->setSpacing(0);
     rows_restrictions_layout->setContentsMargins(0, 0, 0, 0);
     rows_restrictions->setLayout(rows_restrictions_layout);
+
+    rows_restrictions_container_layout->addWidget(rows_restrictions);
 
     for (size_t r = 0; r < rows; r++) {
         Restrictions* text_edit = new Restrictions(Restrictions::Type::Row);
@@ -73,11 +85,18 @@ void Board::createBoard()
         rows_restrictions_layout->addWidget(text_edit);
     }
 
-    layout->addWidget(rows_restrictions, 1, 0);
+    layout->addWidget(rows_restrictions_container, 1, 0);
 
 
     // Column Restrictions
-    cols_restrictions = new QWidget(this);
+    QWidget* cols_restrictions_container = new QWidget(this);
+    QVBoxLayout* cols_restrictions_container_layout = new QVBoxLayout();
+    cols_restrictions_container->setLayout(cols_restrictions_container_layout);
+    cols_restrictions_container_layout->addStretch(1);
+    cols_restrictions_container_layout->setSpacing(0);
+    cols_restrictions_container_layout->setContentsMargins(0, 0, 0, 0);
+
+    cols_restrictions = new QWidget(cols_restrictions_container);
     cols_restrictions->setMinimumWidth(max_width);
     cols_restrictions->setMaximumWidth(max_width);
     cols_restrictions->setMinimumHeight(window_height - max_height);
@@ -85,6 +104,8 @@ void Board::createBoard()
     cols_restrictions_layout->setSpacing(0);
     cols_restrictions_layout->setContentsMargins(0, 0, 0, 0);
     cols_restrictions->setLayout(cols_restrictions_layout);
+
+    cols_restrictions_container_layout->addWidget(cols_restrictions);
 
     for (size_t c = 0; c < cols; c++) {
         Restrictions* text_edit = new Restrictions(Restrictions::Type::Column);
@@ -95,7 +116,7 @@ void Board::createBoard()
         cols_restrictions_layout->addWidget(text_edit);
     }
 
-    layout->addWidget(cols_restrictions, 0, 1);
+    layout->addWidget(cols_restrictions_container, 0, 1);
 
 
     // Squares / Actual Board

@@ -26,6 +26,6 @@ private:
     Ui::MainWindow *ui;
     class SizeSelect* SizeSelect;
     class Board* Board;
-    QHBoxLayout* layout;
+    QGridLayout* layout;
 };
 #endif // MAINWINDOW_H
