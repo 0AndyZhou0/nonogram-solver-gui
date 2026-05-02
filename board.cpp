@@ -49,7 +49,6 @@ void Board::createBoard()
     QWidget* empty = new QWidget(this);
     QGridLayout* box = new QGridLayout();
     empty->setLayout(box);
-    empty->setStyleSheet("padding: 10px;");
     QPushButton* solve_button = new QPushButton("Solve", empty);
     connect(solve_button, &QPushButton::clicked, this, &Board::solve);
 
