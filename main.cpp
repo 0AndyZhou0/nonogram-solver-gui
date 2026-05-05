@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "sizeselect.h"
 
 #include <QApplication>
 
