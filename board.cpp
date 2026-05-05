@@ -173,6 +173,17 @@ void Board::solve()
             {
                 board->findChild<QWidget*>(QString::number(r) + " " + QString::number(c))->setStyleSheet("background-color: black; border: 1px solid black;");
             }
+            else
+            {
+                if (c % 2 == 1)
+                {
+                    board->findChild<QWidget*>(QString::number(r) + " " + QString::number(c))->setStyleSheet("background-color: lightblue; border: 1px solid black;"); // !BUG: Stylesheet creates weird visual bug where borders appear smaller when lightblue with smaller squares
+                }
+                else
+                {
+                    board->findChild<QWidget*>(QString::number(r) + " " + QString::number(c))->setStyleSheet(" border: 1px solid black;");
+                }
+            }
         }
     }
 }
