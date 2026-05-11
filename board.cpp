@@ -131,7 +131,7 @@ void Board::createBoard()
 
 void Board::solve()
 {
-    nonogram_board = new NonogramSolver::NonogramBoard((size_t)rows, (size_t)cols);
+    nonogram_board = new NonogramSolver::NonogramBoard((size_t)cols, (size_t)rows);
     for (size_t r = 0; r < rows; r++)
     {
         QList<int> restrictions = rows_restrictions->findChild<Restrictions*>(QString::number(r))->get_restrictions();
