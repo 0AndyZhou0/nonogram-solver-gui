@@ -19,6 +19,7 @@ Restrictions::Restrictions(Type type, QWidget *parent)
     text_edit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     text_edit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     text_edit->setLineWrapMode(QPlainTextEdit::NoWrap);
+    text_edit->setStyleSheet("border: 2px solid black;");
     connect(text_edit, &QPlainTextEdit::textChanged, this, &Restrictions::format_text);
 }
 

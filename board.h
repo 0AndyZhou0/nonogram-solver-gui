@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <qgridlayout.h>
 #include "solver.hpp"
+#include "square.h"
 #include "restrictions.h"
 
 namespace Ui {

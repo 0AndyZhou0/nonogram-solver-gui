@@ -38,84 +38,63 @@ void Board::createBoard()
     this->setMaximumWidth(window_width+100);
     this->setMaximumHeight(window_height+100);
 
-
-    int max_size = qMin(window_width * 2 / 3, window_height * 2 / 3);
-    int larger_size = qMax(rows, cols);
-    int square_size = max_size / larger_size;
+    int max_square_width = window_width * 2 / 3 / cols;
+    int max_square_height = window_height * 2 / 3 / rows;
+    int square_size = qMin(max_square_width, max_square_height);
     int max_height = square_size * rows;
     int max_width = square_size * cols;
     int font_size = 12; // !TODO: Calc font size using square size / 2;
 
-    QWidget* empty = new QWidget(this);
+    int row_col_length = qMin(window_width - max_width, window_height - max_height);
+
+    QWidget* top_left_corner = new QWidget(this);
     QGridLayout* box = new QGridLayout();
-    empty->setLayout(box);
-    QPushButton* solve_button = new QPushButton("Solve", empty);
+    top_left_corner->setLayout(box);
+    QPushButton* solve_button = new QPushButton("Solve", top_left_corner);
     connect(solve_button, &QPushButton::clicked, this, &Board::solve);
 
-    layout->addWidget(empty, 0, 0);
+    layout->addWidget(top_left_corner, 0, 0);
 
 
     // !TODO: Change Font to Scale with Window
     // Row Restrictions
-    QWidget* rows_restrictions_container = new QWidget(this);
-    QHBoxLayout* rows_restrictions_container_layout = new QHBoxLayout();
-    rows_restrictions_container->setLayout(rows_restrictions_container_layout);
-    rows_restrictions_container_layout->addStretch(1);
-    rows_restrictions_container_layout->setSpacing(0);
-    rows_restrictions_container_layout->setContentsMargins(0, 0, 0, 0);
-
-    rows_restrictions = new QWidget(rows_restrictions_container);
+    rows_restrictions = new QWidget(this);
     rows_restrictions->setMinimumHeight(max_height);
     rows_restrictions->setMaximumHeight(max_height);
-    rows_restrictions->setMinimumWidth(window_width - max_width);
+    rows_restrictions->setMinimumWidth(row_col_length);
     rows_restrictions_layout = new QVBoxLayout();
     rows_restrictions_layout->setSpacing(0);
     rows_restrictions_layout->setContentsMargins(0, 0, 0, 0);
     rows_restrictions->setLayout(rows_restrictions_layout);
-
-    rows_restrictions_container_layout->addWidget(rows_restrictions);
 
     for (size_t r = 0; r < rows; r++) {
         Restrictions* text_edit = new Restrictions(Restrictions::Type::Row);
         text_edit->setObjectName(QString::number(r));
         text_edit->setWidth(window_width - max_width);
         text_edit->setHeight(square_size);
-        text_edit->setStyleSheet("border: 2px solid black;");
         rows_restrictions_layout->addWidget(text_edit);
     }
 
-    layout->addWidget(rows_restrictions_container, 1, 0);
+    layout->addWidget(rows_restrictions, 1, 0);
 
 
     // Column Restrictions
-    QWidget* cols_restrictions_container = new QWidget(this);
-    QVBoxLayout* cols_restrictions_container_layout = new QVBoxLayout();
-    cols_restrictions_container->setLayout(cols_restrictions_container_layout);
-    cols_restrictions_container_layout->addStretch(1);
-    cols_restrictions_container_layout->setSpacing(0);
-    cols_restrictions_container_layout->setContentsMargins(0, 0, 0, 0);
-
-    cols_restrictions = new QWidget(cols_restrictions_container);
-    cols_restrictions->setMinimumWidth(max_width);
-    cols_restrictions->setMaximumWidth(max_width);
-    cols_restrictions->setMinimumHeight(window_height - max_height);
+    cols_restrictions = new QWidget(this);
+    cols_restrictions->setMinimumHeight(row_col_length);
     cols_restrictions_layout = new QHBoxLayout();
     cols_restrictions_layout->setSpacing(0);
     cols_restrictions_layout->setContentsMargins(0, 0, 0, 0);
     cols_restrictions->setLayout(cols_restrictions_layout);
-
-    cols_restrictions_container_layout->addWidget(cols_restrictions);
 
     for (size_t c = 0; c < cols; c++) {
         Restrictions* text_edit = new Restrictions(Restrictions::Type::Column);
         text_edit->setObjectName(QString::number(c));
         text_edit->setWidth(square_size);
         text_edit->setHeight(window_height - max_height);
-        text_edit->setStyleSheet("border: 2px solid black;");
         cols_restrictions_layout->addWidget(text_edit);
     }
 
-    layout->addWidget(cols_restrictions_container, 0, 1);
+    layout->addWidget(cols_restrictions, 0, 1);
 
 
     // Squares / Actual Board
@@ -132,7 +111,7 @@ void Board::createBoard()
     {
         for (size_t c = 0; c < cols; c++)
         {
-            QWidget* square = new QWidget();
+            Square* square = new Square();
             square->setObjectName(QString::number(r) + " " + QString::number(c));
             square->setStyleSheet("border: 1px solid black;");
             if (c % 2 == 1)
@@ -169,19 +148,21 @@ void Board::solve()
     {
         for (int c = 0; c < nonogram_board->get_width(); c++)
         {
+            Square* square = board->findChild<Square*>(QString::number(r) + " " + QString::number(c));
             if (nonogram_board->get(r, c) == 1)
             {
-                board->findChild<QWidget*>(QString::number(r) + " " + QString::number(c))->setStyleSheet("background-color: black; border: 1px solid black;");
+                square->setStyleSheet("background-color: black; border: 1px solid black;");
             }
             else
             {
+                square->Mark_Impossible();
                 if (c % 2 == 1)
                 {
-                    board->findChild<QWidget*>(QString::number(r) + " " + QString::number(c))->setStyleSheet("background-color: lightblue; border: 1px solid black;"); // !BUG: Stylesheet creates weird visual bug where borders appear smaller when lightblue with smaller squares
+                    square->setStyleSheet("background-color: lightblue; border: 1px solid black;");
                 }
                 else
                 {
-                    board->findChild<QWidget*>(QString::number(r) + " " + QString::number(c))->setStyleSheet(" border: 1px solid black;");
+                    square->setStyleSheet("border: 1px solid black;");
                 }
             }
         }
